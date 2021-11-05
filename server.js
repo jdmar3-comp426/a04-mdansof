@@ -35,17 +35,30 @@ app.post("/app/new/user", (req, res) => {
 // READ a list of all users (HTTP method GET) at endpoint /app/users/
 app.get("/app/users", (req, res) => {
 	const stmt = db.prepare('SELECT * FROM userinfo').all();
-	res.status(200).json(stmt);
+	res.status(200).json({"message": "Read all customers"});
 });
 
 // READ a single user (HTTP method GET) at endpoint /app/user/:id
-
+app.get("/app/user/:id", (req,res) =>{
+	const stmt = db.prepare('SELECT * FROM userinfo WHERE id = req.params.id')
+	res.status(200).json({"message": "Found customer"});
+})
 
 
 // UPDATE a single user (HTTP method PATCH) at endpoint /app/update/user/:id
+app.patch("/app/update/user/:id", (req,res)=>{
+	const stmt = db.prepare('UPDATE userinfo SET user = COLESCE(?, user), pass = COALESCE(?, pass) WHERE id = req.params.id')
+	res.status(200).json({"message": "Updated username and password"});
+})
+
 
 // DELETE a single user (HTTP method DELETE) at endpoint /app/delete/user/:id
+app.delete("/app/delete/user/:id", (req,res) =>{
+	const stmt = db.prepare('DELETE FROM userinfo WHERE id = req.params.id')
+	res.status(200).json({"message": "Deleted record"})
+})
 
+	
 // Default response for any other request
 app.use(function (req, res) {
 	res.json({ "message": "Your API is working!" });
