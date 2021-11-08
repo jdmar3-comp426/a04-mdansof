@@ -24,7 +24,7 @@ app.get("/app/", (req, res, next) => {
 
 // Define other CRUD API endpoints using express.js and better-sqlite3
 // CREATE a new user (HTTP method POST) at endpoint /app/new/
-app.post("/app/new/user", (req, res) => {
+app.post("/app/new/user", (req, res, next) => {
 	const user = {user: req.body.user, pass: req.body.pass ? md5(req.body.pass): null}
 	const stmt = db.prepare('INSERT INTO userinfo (user,pass) VALUES(?, ?)')
 	const output = stmt.run(user.user, user.pass)
@@ -48,8 +48,9 @@ app.get("/app/user/:id", (req,res) =>{
 
 // UPDATE a single user (HTTP method PATCH) at endpoint /app/update/user/:id
 app.patch("/app/update/user/:id", (req,res)=>{
+	const user = {user: req.body.user, pass: req.body.pass ? md5(req.body.pass): null,}
 	const stmt = db.prepare('UPDATE userinfo SET user = COLESCE(?, user), pass = COALESCE(?, pass) WHERE id = ?' )
-	const output = stmt.run(req.body.user, req.body.pass, req.params.id)
+	const output = stmt.run(user.user, user.pass, req.params.id)
 	res.status(200).json({"message": output.changes + " record updated: ID " + output.lastInsertRowid + "(200)"})
 })
 
